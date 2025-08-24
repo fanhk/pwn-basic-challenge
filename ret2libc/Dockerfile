@@ -1,7 +1,10 @@
 FROM ubuntu
 MAINTAINER segno
-RUN apt-get update
-RUN apt-get install xinetd -y
+
+RUN apt-get update && apt-get install -y socat && apt-get clean
+
 RUN useradd -m ret2libc
 RUN chown -R root:root /home/ret2libc
-CMD ["/usr/sbin/xinetd","-dontfork"]
+
+# 使用 socat 替代 xinetd
+CMD ["socat", "TCP-LISTEN:1337,reuseaddr,fork", "EXEC:/home/ret2libc/run.sh,su=ret2libc"]
